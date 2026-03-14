@@ -1,27 +1,39 @@
-import { UpdateCompanyDto } from './../dto/update-company.dto';
-import { CreateCompanyDto } from './../dto/create-company.dto';
+import { DatabaseService } from './../database/database.service';
+import { UpdateCompanyDto } from './dto/update-company.dto';
+import { CreateCompanyDto } from './dto/create-company.dto';
 import { Injectable } from '@nestjs/common';
+
 
 @Injectable()
 export class CompaniesService {
-  find(): CreateCompanyDto {
-    return new CreateCompanyDto();
+  constructor(private readonly db: DatabaseService){}
+
+  async findAll() {
+    return await this.db.company.findMany();
     //Return All Companies
   }
-  findOne(id: number) {
-    return { id };
+
+  async findOne(id: string) {
+    return await this.db.company.findUnique({ 
+      where : { id }
+     });
     //Return One Company By Id
   }
-  create(company: CreateCompanyDto) {
-    return { company };
+  async create(company: CreateCompanyDto) {
+    return await this.db.company.create({ data: company });
     //Return the new created Company
   }
-  update(id: number, company: UpdateCompanyDto) {
-    return { id, company };
+  async update(id: string, company: UpdateCompanyDto) {
+    return await this.db.company.update({
+      where: { id },
+      data: company
+    });
     //Return the updated Company
   }
-  delete(id: number) {
-    return { id };
+  async delete(id: string) {
+    return await this.db.company.delete({
+      where : { id }
+    });
     //Delete Company
   }
 }

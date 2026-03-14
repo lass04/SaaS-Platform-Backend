@@ -1,5 +1,5 @@
-import { UpdateCompanyDto } from '../dto/update-company.dto';
-import { CreateCompanyDto } from './../dto/create-company.dto';
+import { UpdateCompanyDto } from './dto/update-company.dto';
+import { CreateCompanyDto } from './dto/create-company.dto';
 import { CompaniesService } from './companies.service';
 import {
   Controller,
@@ -11,49 +11,57 @@ import {
   Delete,
   HttpCode,
   Patch,
-  ParseIntPipe,
+  NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 
 @Controller('companies')
 export class CompaniesController {
-  constructor(private companySVC: CompaniesService) {}
+  constructor(private companyService: CompaniesService) {}
 
   @Get()
+  @HttpCode(200)
   findAll() {
-    return this.companySVC.find();
+    const companies = this.companyService.findAll();
+    if(!companies)
+      throw new NotFoundException('No companies found');
+    return companies;
   }
 
-  @Get()
-  findAllWithQuery(
-    @Query('page', ParseIntPipe) page: number,
-    @Query('limit', ParseIntPipe) limit: number,
-  ) {
-    return `${page} ${limit}`;
-  }
 
   @Get(':id')
-  getOne(@Param('id', ParseIntPipe) id: number) {
-    return this.companySVC.findOne(id);
+  @HttpCode(200)
+  findOne(@Param('id') id: string) {
+    const company = this.companyService.findOne(id);
+    if(!company)
+      throw new NotFoundException('Company Not Found');
+    return company;
   }
 
   @Post()
   @HttpCode(201)
   create(@Body() createCompany: CreateCompanyDto) {
-    return this.companySVC.create(createCompany);
+    const create = this.companyService.create(createCompany);
+    if(!create)
+      throw new BadRequestException('Could not create company');
+    return create;
   }
 
   @Patch(':id')
   @HttpCode(200)
-  update(
-    @Body() updateCompany: UpdateCompanyDto,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
-    return this.companySVC.update(id, updateCompany);
+  update(@Body() updateCompany: UpdateCompanyDto, @Param('id') id: string) {
+    const update = this.companyService.update(id, updateCompany);
+    if(!update)
+      throw new NotFoundException('Company not found');
+    return update;
   }
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id', ParseIntPipe) id: number) {
-    return this.companySVC.delete(id);
+  delete(@Param('id') id: string) {
+    const deleted = this.companyService.delete(id);
+    if(!deleted)
+      throw new NotFoundException('Company not found');
+    return deleted;
   }
 }
