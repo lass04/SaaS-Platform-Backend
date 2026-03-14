@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model Company {
+  id               String     @id @default(uuid())
+  name             String
+  email            String
+  phone            String
+  subscriptionPlan String
+  createdAt        DateTime   @default(now())
+
+  users       User[]
+  categories  Category[]
+  customers   Customer[]
+  products    Product[]
+  sales       Sale[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String
+  createdAt    DateTime @default(now())
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  products Product[]
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String?
+  phone     String?
+  createdAt DateTime @default(now())
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  sales Sale[]
+}
+
+model Product {
+  id            String   @id @default(uuid())
+  name          String
+  description   String?
+  price         Decimal
+  costPrice     Decimal
+  stockQuantity Int
+  barcode       String?
+  createdAt     DateTime @default(now())
+
+  companyId  String
+  company    Company  @relation(fields: [companyId], references: [id])
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  saleItems       SaleItem[]
+  stockMovements  StockMovement[]
+}
+
+model Sale {
+  id            String   @id @default(uuid())
+  totalAmount   Decimal
+  paymentMethod String
+  status        String
+  createdAt     DateTime @default(now())
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  items SaleItem[]
+}
+
+model SaleItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  unitPrice Decimal
+  totalPrice Decimal
+
+  saleId    String
+  sale      Sale    @relation(fields: [saleId], references: [id])
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model StockMovement {
+  id        String   @id @default(uuid())
+  type      String
+  quantity  Int
+  referenceId String?
+  createdAt DateTime @default(now())
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
