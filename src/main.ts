@@ -13,6 +13,7 @@ async function bootstrap() {
     methods: ['GET','POST','PUT','DELETE'], // HTTP Methods
     allowHeaders: ['Content-Type','Authorization'], // Allowed request Headers
     exposedHeaders: ['Content-Range','X-Total-Count'], // Response Headers
+    maxAge: 600,
     crendentials:true // Request must contain tokens or headers
   });
   await app.listen(process.env.PORT ?? 3000);
