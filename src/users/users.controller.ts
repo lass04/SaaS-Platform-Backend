@@ -1,14 +1,14 @@
 import { UserReponseDto } from './dto/user-response.dto';
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, BadRequestException, UseInterceptors, ClassSerializerInterceptor, NotFoundException } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { plainToInstance } from 'class-transformer';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class UsersController {
+  constructor(private readonly userService: UsersService) {}
 
   @Post()
   @HttpCode(201)

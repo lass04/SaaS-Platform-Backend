@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, IsOptional } from 'class-validator';
 
 export class CreateCompanyDto {
   @IsString({ message: 'Name must be a string' })
@@ -13,6 +13,7 @@ export class CreateCompanyDto {
   @IsNotEmpty({ message: 'Subscription plan must be determined'})
   @IsString({ message: 'Subscription plan must be a string'})
   subscriptionPlan: string;
-  @IsNotEmpty({ message: 'Creation date must not be empty' })
+  @IsOptional()
+  @IsNotEmpty({ message: 'createdAt must not be empty'})
   createdAt: Date = new Date();
 }
