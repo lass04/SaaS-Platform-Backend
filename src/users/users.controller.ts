@@ -12,8 +12,8 @@ export class UsersController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() createUserDto: CreateUserDto) {
-    const created = this.userService.create(createUserDto);
+  create(@Body() user: CreateUserDto) {
+    const created = this.userService.create(user);
     if(!created)
       throw new BadRequestException('Could not create a user');
     return plainToInstance(UserReponseDto,created);

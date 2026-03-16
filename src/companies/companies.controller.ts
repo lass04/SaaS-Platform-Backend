@@ -1,3 +1,4 @@
+import { AuthGuard } from './../guards/auth.guard';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { CompaniesService } from './companies.service';
@@ -13,10 +14,13 @@ import {
   Patch,
   NotFoundException,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 
+@UseGuards(AuthGuard)
 @Controller('companies')
 export class CompaniesController {
+
   constructor(private companyService: CompaniesService) {}
 
   @Get()
