@@ -1,3 +1,5 @@
+import { RoleGuard } from './../guards/role-guard';
+import { Roles } from './../common/decorators/roles-decorator';
 import { AuthGuard } from './../guards/auth.guard';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -17,12 +19,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard,RoleGuard)
 @Controller('companies')
 export class CompaniesController {
 
   constructor(private companyService: CompaniesService) {}
 
+  @Roles('admin')
   @Get()
   @HttpCode(200)
   findAll() {
@@ -41,6 +44,7 @@ export class CompaniesController {
       throw new NotFoundException('Company Not Found');
     return company;
   }
+
 
   @Post()
   @HttpCode(201)
