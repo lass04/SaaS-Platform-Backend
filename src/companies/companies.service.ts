@@ -30,7 +30,7 @@ export class CompaniesService {
     });
     //Return the updated Company
   }
-  async delete(id: string) {
+  async remove(id: string) {
     return await this.db.company.delete({
       where : { id }
     });

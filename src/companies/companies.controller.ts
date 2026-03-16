@@ -59,7 +59,7 @@ export class CompaniesController {
   @Delete(':id')
   @HttpCode(204)
   delete(@Param('id') id: string) {
-    const deleted = this.companyService.delete(id);
+    const deleted = this.companyService.remove(id);
     if(!deleted)
       throw new NotFoundException('Company not found');
     return deleted;
