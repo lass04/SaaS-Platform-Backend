@@ -9,6 +9,9 @@ import { CustomersModule } from './customers/customers.module';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule,ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { ProductsModule } from './products/products.module';
+import { SalesModule } from './sales/sales.module';
+import { SaleItemsModule } from './sale-items/sale-items.module';
 
 @Module({
   imports: [
@@ -35,7 +38,10 @@ import { APP_GUARD } from '@nestjs/core';
         ttl: 100000,
         limit: 100
       },
-  ])
+  ]),
+    ProductsModule,
+    SalesModule,
+    SaleItemsModule
   ],
   controllers: [AppController],
   providers: [
