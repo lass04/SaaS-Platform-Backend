@@ -1,3 +1,18 @@
+-- CreateEnum
+CREATE TYPE "subscriptionPlan" AS ENUM ('FREE', 'BASIC', 'PRO', 'ENTREPRISE');
+
+-- CreateEnum
+CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'EMPLOYEE');
+
+-- CreateEnum
+CREATE TYPE "PaymentMethod" AS ENUM ('CASH', 'CARD', 'TRANSFER');
+
+-- CreateEnum
+CREATE TYPE "SaleStatus" AS ENUM ('PENDING', 'COMPLETED', 'CANCELLED');
+
+-- CreateEnum
+CREATE TYPE "StockMovementType" AS ENUM ('IN', 'OUT');
+
 -- CreateTable
 CREATE TABLE "Company" (
     "id" TEXT NOT NULL,
@@ -6,6 +21,7 @@ CREATE TABLE "Company" (
     "phone" TEXT NOT NULL,
     "subscriptionPlan" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Company_pkey" PRIMARY KEY ("id")
 );
@@ -16,8 +32,11 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
-    "role" TEXT NOT NULL,
+    "role" "UserRole" NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
     "companyId" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -28,6 +47,8 @@ CREATE TABLE "Category" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "companyId" TEXT NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
@@ -39,7 +60,10 @@ CREATE TABLE "Customer" (
     "name" TEXT NOT NULL,
     "email" TEXT,
     "phone" TEXT,
+    "address" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
     "companyId" TEXT NOT NULL,
 
     CONSTRAINT "Customer_pkey" PRIMARY KEY ("id")
@@ -50,11 +74,15 @@ CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "price" DECIMAL(65,30) NOT NULL,
-    "costPrice" DECIMAL(65,30) NOT NULL,
+    "price" DECIMAL(10,2) NOT NULL,
+    "costPrice" DECIMAL(10,2) NOT NULL,
     "stockQuantity" INTEGER NOT NULL,
     "barcode" TEXT,
+    "sku" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
     "companyId" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
 
@@ -64,10 +92,13 @@ CREATE TABLE "Product" (
 -- CreateTable
 CREATE TABLE "Sale" (
     "id" TEXT NOT NULL,
-    "totalAmount" DECIMAL(65,30) NOT NULL,
-    "paymentMethod" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
+    "totalAmount" DECIMAL(10,2) NOT NULL,
+    "paymentMethod" "PaymentMethod" NOT NULL,
+    "status" "SaleStatus" NOT NULL,
+    "discount" DECIMAL(10,2),
+    "tax" DECIMAL(10,2),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "companyId" TEXT NOT NULL,
     "customerId" TEXT NOT NULL,
 
@@ -78,8 +109,8 @@ CREATE TABLE "Sale" (
 CREATE TABLE "SaleItem" (
     "id" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
-    "unitPrice" DECIMAL(65,30) NOT NULL,
-    "totalPrice" DECIMAL(65,30) NOT NULL,
+    "unitPrice" DECIMAL(10,2) NOT NULL,
+    "totalPrice" DECIMAL(10,2) NOT NULL,
     "saleId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
 
@@ -89,7 +120,7 @@ CREATE TABLE "SaleItem" (
 -- CreateTable
 CREATE TABLE "StockMovement" (
     "id" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
+    "type" "StockMovementType" NOT NULL,
     "quantity" INTEGER NOT NULL,
     "referenceId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -99,7 +130,40 @@ CREATE TABLE "StockMovement" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Company_email_key" ON "Company"("email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "User_companyId_idx" ON "User"("companyId");
+
+-- CreateIndex
+CREATE INDEX "Category_companyId_idx" ON "Category"("companyId");
+
+-- CreateIndex
+CREATE INDEX "Customer_companyId_idx" ON "Customer"("companyId");
+
+-- CreateIndex
+CREATE INDEX "Product_companyId_idx" ON "Product"("companyId");
+
+-- CreateIndex
+CREATE INDEX "Product_categoryId_idx" ON "Product"("categoryId");
+
+-- CreateIndex
+CREATE INDEX "Sale_companyId_idx" ON "Sale"("companyId");
+
+-- CreateIndex
+CREATE INDEX "Sale_customerId_idx" ON "Sale"("customerId");
+
+-- CreateIndex
+CREATE INDEX "SaleItem_saleId_idx" ON "SaleItem"("saleId");
+
+-- CreateIndex
+CREATE INDEX "SaleItem_productId_idx" ON "SaleItem"("productId");
+
+-- CreateIndex
+CREATE INDEX "StockMovement_productId_idx" ON "StockMovement"("productId");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

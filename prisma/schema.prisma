@@ -11,14 +11,46 @@ datasource db {
   provider = "postgresql"
 }
 
+enum subscriptionPlan{
+  FREE
+  BASIC
+  PRO
+  ENTREPRISE
+}
+
+
+enum UserRole {
+  ADMIN
+  EMPLOYEE
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  TRANSFER
+}
+
+enum SaleStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum StockMovementType {
+  IN
+  OUT
+}
+
+
 
 model Company {
-  id               String     @id @default(uuid())
+  id               String   @id @default(uuid())
   name             String
-  email            String
+  email            String   @unique
   phone            String
   subscriptionPlan String
-  createdAt        DateTime   @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   users       User[]
   categories  Category[]
@@ -32,22 +64,31 @@ model User {
   name         String
   email        String   @unique
   passwordHash String
-  role         String
+  role         UserRole
+  isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
 
   companyId String
   company   Company @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
 }
 
 model Category {
   id          String   @id @default(uuid())
   name        String
   description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   companyId String
   company   Company @relation(fields: [companyId], references: [id])
 
   products Product[]
+
+  @@index([companyId])
 }
 
 model Customer {
@@ -55,23 +96,32 @@ model Customer {
   name      String
   email     String?
   phone     String?
+  address   String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
 
   companyId String
   company   Company @relation(fields: [companyId], references: [id])
 
   sales Sale[]
+
+  @@index([companyId])
 }
 
 model Product {
   id            String   @id @default(uuid())
   name          String
   description   String?
-  price         Decimal
-  costPrice     Decimal
+  price         Decimal  @db.Decimal(10,2)
+  costPrice     Decimal  @db.Decimal(10,2)
   stockQuantity Int
   barcode       String?
+  sku           String?
+  isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
 
   companyId  String
   company    Company  @relation(fields: [companyId], references: [id])
@@ -79,16 +129,22 @@ model Product {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
 
-  saleItems       SaleItem[]
-  stockMovements  StockMovement[]
+  saleItems      SaleItem[]
+  stockMovements StockMovement[]
+
+  @@index([companyId])
+  @@index([categoryId])
 }
 
 model Sale {
-  id            String   @id @default(uuid())
-  totalAmount   Decimal
-  paymentMethod String
-  status        String
-  createdAt     DateTime @default(now())
+  id            String        @id @default(uuid())
+  totalAmount   Decimal       @db.Decimal(10,2)
+  paymentMethod PaymentMethod
+  status        SaleStatus
+  discount      Decimal?      @db.Decimal(10,2)
+  tax           Decimal?      @db.Decimal(10,2)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   companyId String
   company   Company @relation(fields: [companyId], references: [id])
@@ -97,28 +153,36 @@ model Sale {
   customer   Customer @relation(fields: [customerId], references: [id])
 
   items SaleItem[]
+
+  @@index([companyId])
+  @@index([customerId])
 }
 
 model SaleItem {
-  id        String  @id @default(uuid())
-  quantity  Int
-  unitPrice Decimal
-  totalPrice Decimal
+  id         String  @id @default(uuid())
+  quantity   Int
+  unitPrice  Decimal @db.Decimal(10,2)
+  totalPrice Decimal @db.Decimal(10,2)
 
-  saleId    String
-  sale      Sale    @relation(fields: [saleId], references: [id])
+  saleId String
+  sale   Sale @relation(fields: [saleId], references: [id])
 
   productId String
   product   Product @relation(fields: [productId], references: [id])
+
+  @@index([saleId])
+  @@index([productId])
 }
 
 model StockMovement {
-  id        String   @id @default(uuid())
-  type      String
-  quantity  Int
+  id          String              @id @default(uuid())
+  type        StockMovementType
+  quantity    Int
   referenceId String?
-  createdAt DateTime @default(now())
+  createdAt   DateTime            @default(now())
 
   productId String
   product   Product @relation(fields: [productId], references: [id])
+
+  @@index([productId])
 }
