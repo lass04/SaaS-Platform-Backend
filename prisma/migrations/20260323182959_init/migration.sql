@@ -19,7 +19,7 @@ CREATE TABLE "Company" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
-    "subscriptionPlan" TEXT NOT NULL,
+    "subscriptionPlan" "subscriptionPlan" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
