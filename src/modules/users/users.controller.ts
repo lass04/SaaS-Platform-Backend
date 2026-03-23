@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { Roles } from 'src/common/decorators/role.decorator';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -25,6 +26,7 @@ export class UsersController {
     return 
   }
 
+  @Roles('USER')
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const updated = await this.usersService.update(id, updateUserDto);
@@ -33,6 +35,7 @@ export class UsersController {
     return plainToInstance(UserResponseDto,updated);
   }
 
+  @Roles('USER')
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const deleted = await this.usersService.remove(id);

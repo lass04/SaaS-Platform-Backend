@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, NotFoundException, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
+import { Roles } from 'src/common/decorators/role.decorator';
 
 @Controller('companies')
+@UseInterceptors(ClassSerializerInterceptor)
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
@@ -15,6 +17,7 @@ export class CompaniesController {
     return created;
   }
 
+  @Roles('ADMIN')
   @Get()
   async findAll() {
     const finds = await this.companiesService.findAll();
@@ -31,6 +34,7 @@ export class CompaniesController {
     return find;
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
   async update(@Param('id') id: string, @Body() dto: UpdateCompanyDto) {
     const updated = await this.companiesService.update(id, dto);
@@ -39,6 +43,7 @@ export class CompaniesController {
     return updated;
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const removed = await this.companiesService.remove(id);

@@ -1,3 +1,4 @@
+import { AuthGuard } from './common/guards/auth.guard';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
