@@ -1,3 +1,4 @@
+import { CompaniesService } from 'src/modules/companies/companies.service';
 import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
@@ -5,14 +6,17 @@ import { LoginDto } from './dto/login.dto';
 import { UsersService } from 'src/modules/users/users.service';
 import bcrypt from 'bcrypt';
 
+
 @Injectable()
 export class AuthService {
+
   constructor(
     private userService: UsersService,
+    private companyService: CompaniesService,
     private jwtService: JwtService
    ){}
 
-  async Login(dto: LoginDto){
+  async login(dto: LoginDto){
     const user = await this.userService.findByEmail(dto.email); 
     if(!user)
       throw new NotFoundException('User not found');
@@ -33,11 +37,16 @@ export class AuthService {
     }
   }
 
-  // Missed CompanyId existance in DB
   async register(dto: RegisterDto){
     const exist = await this.userService.findByEmail(dto.email);
-    if(exist)
+    if(exist){
       throw new BadRequestException('User already exists');
+    }
+    
+    const companyVerif = await this.companyService.findOne(dto.companyId);
+    if(!companyVerif){
+      throw new BadRequestException('Invalid companyId');
+    }
 
       dto.passwordHash = await bcrypt.hash(dto.passwordHash,10);
       const createUser = await this.userService.create({
@@ -63,6 +72,5 @@ export class AuthService {
 
   }
 
-  logout(){}
 
 }
