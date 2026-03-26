@@ -6,6 +6,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { APP_GUARD } from '@nestjs/core';
+import { ProductsModule } from './modules/products/products.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { CustomersModule } from './modules/customers/customers.module';
 
 
 @Module({
@@ -14,7 +17,10 @@ import { APP_GUARD } from '@nestjs/core';
     AuthModule, 
     UsersModule,
     CompaniesModule,
-    JwtModule
+    JwtModule,
+    ProductsModule,
+    CategoriesModule,
+    CustomersModule
   ],
   providers: [
     {
