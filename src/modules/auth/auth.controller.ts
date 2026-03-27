@@ -1,7 +1,8 @@
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { Body, Controller, Post, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { Roles } from 'src/common/decorators/role.decorator';
 
 
 @Controller('auth')
@@ -18,6 +19,7 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
+  @Roles('ADMIN')
   @Post('logout')
   logout(){}
 

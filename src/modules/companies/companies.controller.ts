@@ -2,11 +2,13 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException,
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
+import { Roles } from 'src/common/decorators/role.decorator';
 
 @Controller('companies')
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
+  @Roles('ADMIN')
   @Post()
    create(@Body() createCompanyDto: CreateCompanyDto) {
      return this.companiesService.create(createCompanyDto);
@@ -22,11 +24,13 @@ export class CompaniesController {
      return this.companiesService.findOne(id);
    }
  
+   @Roles('ADMIN')
    @Patch(':id')
    update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
      return this.companiesService.update(id, updateCompanyDto);
    }
  
+   @Roles('ADMIN')
    @Delete(':id')
    remove(@Param('id') id: string) {
      return this.companiesService.remove(id);

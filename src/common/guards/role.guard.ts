@@ -3,7 +3,7 @@ import { Injectable, ExecutionContext, CanActivate, UnauthorizedException } from
 import { Roles } from '../decorators/role.decorator';
 
 @Injectable()
-export class AuthGuard implements CanActivate{
+export class RoleGuard implements CanActivate{
 
     constructor(private reflector: Reflector){}
 

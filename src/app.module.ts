@@ -1,4 +1,5 @@
-import { AuthGuard } from './common/guards/role.guard';
+import { AuthGuard } from './common/guards/auth.guard';
+import { RoleGuard } from './common/guards/role.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './modules/database/database.module';
@@ -30,6 +31,10 @@ import { SaleItemsModule } from './modules/sale-items/sale-items.module';
     {
       provide: APP_GUARD,
       useClass: AuthGuard
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard
     }
   ]
 })
