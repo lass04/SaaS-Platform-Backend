@@ -9,6 +9,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { ProductsModule } from './modules/products/products.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CustomersModule } from './modules/customers/customers.module';
+import { SalesModule } from './modules/sales/sales.module';
+import { SaleItemsModule } from './modules/sale-items/sale-items.module';
 
 
 @Module({
@@ -20,7 +22,9 @@ import { CustomersModule } from './modules/customers/customers.module';
     JwtModule,
     ProductsModule,
     CategoriesModule,
-    CustomersModule
+    CustomersModule,
+    SalesModule,
+    SaleItemsModule
   ],
   providers: [
     {
